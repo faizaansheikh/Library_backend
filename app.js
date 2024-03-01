@@ -19,7 +19,7 @@ mongoose.connect(mongoURI, {
 
 // Models
 const User = require('./models/User');
-
+const Books = require('./models/Books')
 // Middleware
 app.use(bodyParser.json());
 
@@ -61,11 +61,46 @@ app.post('/login', async (req, res) => {
 
 app.get('/users',async (req,res) => {
     try {
-        const users = await User.find({},'username email')
+        const users = await User.find({},'username email password')
         res.status(200).json(users)
     }catch{
         res.status(500).json({error:'Internal server error'})
     }
+})
+app.delete('/users/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+    
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully', deletedUser });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+///books///
+app.post('/addbooks', async (req, res) => {
+  try {
+    const { bookname, author, description,category,status,price } = req.body;
+    // Create a new user
+    const book = new Books({ bookname, author, description,category,status,price});
+    await book.save();
+    res.status(201).json({ message: 'Book added successfully', book });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+app.get('/books',async (req,res) => {
+  try {
+      const users = await Books.find({},'bookname author description category status price')
+      res.status(200).json(users)
+  }catch{
+      res.status(500).json({error:'Internal server error'})
+  }
 })
 // Start the server
 app.listen(PORT, () => {
