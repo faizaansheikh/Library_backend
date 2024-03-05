@@ -7,7 +7,7 @@ const multer = require('multer');
 const PORT = 5000; // You can change this to any port you prefer
 app.use(cors());
 // MongoDB Connection
-
+// mongodb+srv://sheikhfaizaan608:<password>@cluster0.wmjgu40.mongodb.net/
 const mongoURI = 'mongodb+srv://sheikhfaizaan608:vmRMDYIMo6Ah6JI7@cluster0.wmjgu40.mongodb.net/';
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
@@ -22,15 +22,15 @@ mongoose.connect(mongoURI, {
 const User = require('./models/User');
 const Books = require('./models/Books')
 // Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads');
+    cb(null, './uploads'); // Uploads will be stored in the "uploads/" directory
   },
   filename: function (req, file, cb) {
-    const unique = Date.now()
-    cb(null, unique + file.originalname);
-  },
+    cb(null, Date.now() + '-' + 'file.originalname'); // File name will be timestamp + original name
+  }
 });
 
 const upload = multer({ storage: storage });
@@ -98,16 +98,22 @@ app.post('/addbooks', upload.single('images'),async (req, res) => {
   try {
     const { bookname, author, description,category,status,price } = req.body;
     console.log(req.body);
-    console.log(req);
+    console.log(req.file);
     // const file = req.file.path;
 
     // Create a new user
-    const book = new Books({ bookname, author, description,category,status,price,images: file});
+    const book = new Books({ bookname, author, description,category,status,price,images:req.file.path});
     await book.save();
     res.status(201).json({ message: 'Book added successfully', book });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+  // console.log(req);
+  // if (!req.images) {
+  //   return res.status(400).send('No files were uploaded.');
+  // }
+
+  // res.send('File uploaded successfully!');
 });
 
 app.get('/books',async (req,res) => {
@@ -118,6 +124,23 @@ app.get('/books',async (req,res) => {
       res.status(500).json({error:'Internal server error'})
   }
 })
+app.get('/books/:id', async (req, res) => {
+  try {
+    const bookId = req.params.id; 
+    const book = await Books.findById(bookId); 
+
+    if (!book) {
+     
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    
+    res.status(200).json(book);
+  } catch (error) {
+
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 app.put('/books/:id', async (req, res) => {
   const bookId = req.params.id;
 
