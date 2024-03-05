@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors'); 
 const app = express();
+const multer = require('multer');
 const PORT = 5000; // You can change this to any port you prefer
 app.use(cors());
 // MongoDB Connection
@@ -22,7 +23,17 @@ const User = require('./models/User');
 const Books = require('./models/Books')
 // Middleware
 app.use(bodyParser.json());
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads');
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now()
+    cb(null, unique + file.originalname);
+  },
+});
 
+const upload = multer({ storage: storage });
 // Routes
 app.post('/signup', async (req, res) => {
   try {
@@ -83,17 +94,22 @@ app.delete('/users/:id', async (req, res) => {
   }
 });
 ///books///
-app.post('/addbooks', async (req, res) => {
+app.post('/addbooks', upload.single('images'),async (req, res) => {
   try {
     const { bookname, author, description,category,status,price } = req.body;
+    console.log(req.body);
+    console.log(req);
+    // const file = req.file.path;
+
     // Create a new user
-    const book = new Books({ bookname, author, description,category,status,price});
+    const book = new Books({ bookname, author, description,category,status,price,images: file});
     await book.save();
     res.status(201).json({ message: 'Book added successfully', book });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
+
 app.get('/books',async (req,res) => {
   try {
       const users = await Books.find({},'bookname author description category status price')
@@ -102,6 +118,42 @@ app.get('/books',async (req,res) => {
       res.status(500).json({error:'Internal server error'})
   }
 })
+app.put('/books/:id', async (req, res) => {
+  const bookId = req.params.id;
+
+  try {
+    const updatedBook = await Books.findByIdAndUpdate(bookId, req.body, {
+      new: true,
+    });
+
+    if (!updatedBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    res.status(201).json({message: 'Book updated successfully',updatedBook});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete Book API (DELETE)
+app.delete('/books/:id', async (req, res) => {
+  const bookId = req.params.id;
+
+  try {
+    const deletedBook = await Books.findByIdAndDelete(bookId);
+
+    if (!deletedBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    res.status(200).json({ message: 'Book deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
