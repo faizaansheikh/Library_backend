@@ -22,7 +22,8 @@ mongoose.connect(mongoURI, {
 
 // Models
 const User = require('./models/User');
-const Books = require('./models/Books')
+const Books = require('./models/Books');
+const Requests = require('./models/requests');
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -98,13 +99,13 @@ app.delete('/users/:id', async (req, res) => {
 ///books///
 app.post('/addbooks', upload.single('images'),async (req, res) => {
   try {
-    const { carname, seater, mileage,company,color,model,status,price } = req.body;
+    const { carname, seater, mileage,company,color,model,borowedby,status,price } = req.body;
     console.log(req.body);
     console.log(req.file);
     // const file = req.file.path;
 
     // Create a new user
-    const book = new Books({ carname, seater, mileage,company,color,model,status,price,images:req.file.path});
+    const book = new Books({ carname, seater, mileage,company,color,model,borowedby,status,price,images:req.file.path});
     await book.save();
     res.status(201).json({ message: 'Car added successfully', book });
   } catch (err) {
@@ -140,7 +141,7 @@ app.put('/books/:id', upload.single('images'), async (req, res) => {
 });
 app.get('/books',async (req,res) => {
   try {
-      const users = await Books.find({},'carname seater mileage company color model price status images')
+      const users = await Books.find({},'carname seater mileage company color model borowedby price status images')
       res.status(200).json(users)
   }catch{
       res.status(500).json({error:'Internal server error'})
@@ -181,6 +182,24 @@ app.delete('/books/:id', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+///requests///
+// {fullname,address,phone,email,accountno}
+app.post('/userequest',async (req, res) => {
+  try {
+    const {fullname,address,phone,email,accountno,reqfor} = req.body;
+    console.log(req.body);
+   
+
+    // Create a new user
+    const request = new Requests({fullname,address,phone,email,accountno,reqfor});
+    await request.save();
+    res.status(201).json({ message: 'Request send successfully', request });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+  
 });
 // Start the server
 app.listen(PORT, () => {

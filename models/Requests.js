@@ -1,52 +1,35 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const BooksSchema = new mongoose.Schema({
-  carname: {
+const RequestsSchema = new mongoose.Schema({
+  fullname: {
     type: String,
     required: true
   },
-  seater: {
-    type: String,
-    required: true,
-    // unique: true
-  },
-  mileage: {
+  address: {
     type: String,
     required: true
   },
-  company: {
-    type: String,
-    required: true
-  },
-  color: {
-    type: String,
-    required: true
-  },
-  model: {
+  phone: {
     type: Number,
     required: true
   },
-  borowedby: {
-    type: String,
-    required: false
-  },
-  status: {
+  email: {
     type: String,
     required: true
   },
-  price: {
+  accountno: {
     type: Number,
     required: true
   },
-  images: {
+  reqfor: {
     type: String,
     required: true
-  }
+  },
 });
 
 // BooksSchema.methods.comparePassword = function(candidatePassword) {
 //   return bcrypt.compare(candidatePassword, this.password);
 // };
-const Books = mongoose.model('Books', BooksSchema);
+const Requests = mongoose.model('Requests', RequestsSchema);
 
-module.exports = Books;
+module.exports = Requests;
