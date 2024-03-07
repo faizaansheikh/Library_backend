@@ -98,15 +98,15 @@ app.delete('/users/:id', async (req, res) => {
 ///books///
 app.post('/addbooks', upload.single('images'),async (req, res) => {
   try {
-    const { bookname, author, description,category,status,price } = req.body;
+    const { carname, seater, mileage,company,color,model,status,price } = req.body;
     console.log(req.body);
     console.log(req.file);
     // const file = req.file.path;
 
     // Create a new user
-    const book = new Books({ bookname, author, description,category,status,price,images:req.file.path});
+    const book = new Books({ carname, seater, mileage,company,color,model,status,price,images:req.file.path});
     await book.save();
-    res.status(201).json({ message: 'Book added successfully', book });
+    res.status(201).json({ message: 'Car added successfully', book });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -129,10 +129,10 @@ app.put('/books/:id', upload.single('images'), async (req, res) => {
     });
 
     if (!updatedBook) {
-      return res.status(404).json({ error: 'Book not found' });
+      return res.status(404).json({ error: 'Car not found' });
     }
 
-    res.status(201).json({ message: 'Book updated successfully', updatedBook });
+    res.status(201).json({ message: 'Car updated successfully', updatedBook });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -140,7 +140,7 @@ app.put('/books/:id', upload.single('images'), async (req, res) => {
 });
 app.get('/books',async (req,res) => {
   try {
-      const users = await Books.find({},'bookname author description category status price images')
+      const users = await Books.find({},'carname seater mileage company color model price status images')
       res.status(200).json(users)
   }catch{
       res.status(500).json({error:'Internal server error'})
@@ -153,7 +153,7 @@ app.get('/books/:id', async (req, res) => {
 
     if (!book) {
      
-      return res.status(404).json({ error: 'Book not found' });
+      return res.status(404).json({ error: 'Car not found' });
     }
 
     
@@ -173,10 +173,10 @@ app.delete('/books/:id', async (req, res) => {
     const deletedBook = await Books.findByIdAndDelete(bookId);
 
     if (!deletedBook) {
-      return res.status(404).json({ error: 'Book not found' });
+      return res.status(404).json({ error: 'Car not found' });
     }
 
-    res.status(200).json({ message: 'Book deleted successfully' });
+    res.status(200).json({ message: 'Car deleted successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
