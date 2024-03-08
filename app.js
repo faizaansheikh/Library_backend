@@ -201,6 +201,30 @@ app.post('/userequest',async (req, res) => {
   }
   
 });
+app.get('/userequest',async (req,res) => {
+  try {
+      const Request = await Requests.find({},'fullname address phone email accountno reqfor')
+      res.status(200).json(Request)
+  }catch{
+      res.status(500).json({error:'Internal server error'})
+  }
+})
+app.delete('/userequest/:id', async (req, res) => {
+  const reqId = req.params.id;
+
+  try {
+    const deletedReq = await Requests.findByIdAndDelete(reqId);
+
+    if (!deletedReq) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    res.status(200).json({ message: 'Request deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
