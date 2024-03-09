@@ -21,6 +21,10 @@ const RequestsSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  status: {
+    type: String,
+    required: false
+  },
   reqfor: {
     type: String,
     required: true

@@ -188,12 +188,12 @@ app.delete('/books/:id', async (req, res) => {
 // {fullname,address,phone,email,accountno}
 app.post('/userequest',async (req, res) => {
   try {
-    const {fullname,address,phone,email,accountno,reqfor} = req.body;
+    const {fullname,address,phone,email,accountno,status,reqfor} = req.body;
     console.log(req.body);
    
 
     // Create a new user
-    const request = new Requests({fullname,address,phone,email,accountno,reqfor});
+    const request = new Requests({fullname,address,phone,email,accountno,status,reqfor});
     await request.save();
     res.status(201).json({ message: 'Request send successfully', request });
   } catch (err) {
@@ -201,9 +201,32 @@ app.post('/userequest',async (req, res) => {
   }
   
 });
+app.put('/userequest/:id', async (req, res) => {
+  const bookId = req.params.id;
+  const updateFields = req.body;
+
+  try {
+    let updatedBook;
+   
+
+    // Find and update the book with the provided ID
+    updatedBook = await Requests.findByIdAndUpdate(bookId, updateFields, {
+      new: true,
+    });
+
+    if (!updatedBook) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    res.status(201).json({ message: 'Request updated successfully', updatedBook });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 app.get('/userequest',async (req,res) => {
   try {
-      const Request = await Requests.find({},'fullname address phone email accountno reqfor')
+      const Request = await Requests.find({},'fullname address phone email accountno status reqfor')
       res.status(200).json(Request)
   }catch{
       res.status(500).json({error:'Internal server error'})
