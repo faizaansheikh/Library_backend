@@ -10,6 +10,7 @@ app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // MongoDB Connection
 // mongodb+srv://sheikhfaizaan608:<password>@cluster0.wmjgu40.mongodb.net/
+
 const mongoURI = 'mongodb+srv://sheikhfaizaan608:vmRMDYIMo6Ah6JI7@cluster0.wmjgu40.mongodb.net/';
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
