@@ -22,9 +22,9 @@ mongoose.connect(mongoURI, {
 });
 
 // Models
-const User = require('./models/User');
-const Books = require('./models/Books');
-const Requests = require('./models/requests');
+const User = require('../models/User');
+const Books = require('../models/Books');
+const Requests = require('../models/requests');
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
