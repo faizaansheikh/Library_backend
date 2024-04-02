@@ -22,9 +22,9 @@ mongoose.connect(mongoURI, {
 });
 
 // Models
-const User = require('../models/User');
-const Books = require('../models/Books');
-const Requests = require('../models/requests');
+const User = require('./models/User');
+const Books = require('./models/Books');
+const Requests = require('./models/requests');
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -253,4 +253,3 @@ app.delete('/userequest/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-module.exports.handler = app;
